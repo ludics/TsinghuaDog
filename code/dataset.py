@@ -7,6 +7,23 @@ from jittor import transform
 from jittor.dataset import Dataset
 import numpy as np
 from PIL import Image
+import glob
+
+
+transform_train = transform.Compose([
+    transform.Resize((512, 512)),
+    transform.RandomCrop(448),
+    transform.RandomHorizontalFlip(),
+    transform.ToTensor(),
+    transform.ImageNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+])
+
+transform_test = transform.Compose([
+    transform.Resize((512, 512)),
+    transform.CenterCrop(448),
+    transform.ToTensor(),
+    transform.ImageNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+])
 
 
 class TsinghuaDog(Dataset):
@@ -56,6 +73,29 @@ class TsinghuaDog(Dataset):
         img = np.asarray(image)
         return img, label
 
+class TsinghuaDogTest(Dataset):
+    def __init__(self, root_dir, batch_size, shuffle=False, transform=None, num_workers=1):
+        super().__init__()
+        self.root_dir = root_dir
+        self.batch_size = batch_size 
+        self.shuffle = shuffle
+        self.image_list = glob.glob(os.path.join(root_dir, '*.j*'))
+        self.transform = transform
+        self.set_attrs(
+            batch_size=self.batch_size,
+            total_len=len(self.image_list),
+            shuffle=self.shuffle
+        )
+
+    def __getitem__(self, idx):
+        image_path = self.image_list[idx]
+        image_name = image_path.split('/')[-1]
+        image = Image.open(image_path).convert('RGB')
+
+        if self.transform is not None:
+            image = self.transform(image) 
+        img = np.asarray(image)
+        return img, image_name
 
 
 def test_dataset():

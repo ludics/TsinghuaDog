@@ -1,0 +1,13 @@
+train:
+  epochs: 50 # 100 # 训练轮数
+  batch_size: 16 # 批大小
+  lr: 2.e-3 # 学习率
+  gamma: 0.2 # 学习率衰减稀疏
+  step_size: 5 # 学习率衰减间隔
+  momentum: 0.9 # 动量
+  weight_decay: 5.e-4 # 权重衰减
+  disp_inter: 1 # 显示间隔
+  save_inter: 2 # 保存间隔
+  iter_inter: 200 # 显示迭代间隔
+  min_inter: 10
+  second_loss: 'soft_ce'
